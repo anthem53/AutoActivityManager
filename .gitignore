@@ -2,3 +2,5 @@
 
 realTest.py
 test.py
+*.fl
+*.txt
