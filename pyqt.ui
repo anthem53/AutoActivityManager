@@ -78,6 +78,11 @@
         <string>반복주기</string>
        </property>
       </column>
+      <column>
+       <property name="text">
+        <string>가상환경 이름</string>
+       </property>
+      </column>
      </widget>
     </item>
    </layout>
@@ -118,6 +123,9 @@
   <action name="actionsave">
    <property name="text">
     <string>save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionexecute_N_day_list">

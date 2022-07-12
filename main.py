@@ -58,8 +58,8 @@ class WindowClass(QMainWindow, form_class):
         self.tableWidget.setColumnWidth(3,int(self.width() * 0.1))
 
         self.tableWidget.customContextMenuRequested.connect(self.generateMenu)
-
-
+        self.actionsave.triggered.connect(self.save_table_content)
+        self.actionload.triggered.connect(self.load_file_content)
         self.registerButton.clicked.connect(self.registerNewfile)
 
 
@@ -78,25 +78,66 @@ class WindowClass(QMainWindow, form_class):
             fname = fNames[-2] + "/" + fNames[-1] 
             count  = len(self.tableItemList)
             firstColumn = 0
-            secondColumn = firstColumn + 1
-            thirdColumn = secondColumn + 1
-            forthColume = thirdColumn + 1
-            self.tableWidget.setItem(count ,firstColumn, QTableWidgetItem(fname))
-            self.tableWidget.setItem(count  ,secondColumn, QTableWidgetItem(fAddress[0]))
-            self.tableWidget.setItem(count  ,thirdColumn, QTableWidgetItem(str(0)))
-            self.tableWidget.setItem(count  ,forthColume, QTableWidgetItem(str(0)))
-
+            self.updateRow(count,fname,fAddress[0],0,0,"Leejihyeon")
             self.tableItemList.append(self.widgetItem(fname, fAddress, 0,0))
             #self.tableWidget.resizeColumnsToContents()
             
             print("registerNewfile complete")
         else:
-            print("Fail")
-
-        
-        # 주소
+            print("Not select file")
+    def updateCell(self,row,col, content):
+        self.tableWidget.setItem(row,col,QTableWidgetItem(content))
+    def updateRow (self,row,name, address=None, repeatType=None,repeatCycle=None, env=None):
+        print(name)
+        if type(name)== str:
+            firstColumn = 0
+            repeatType = str(repeatType)
+            repeatCycle = str(repeatCycle)
+            self.tableWidget.setItem(row ,firstColumn, QTableWidgetItem(name))
+            self.tableWidget.setItem(row  ,firstColumn + 1, QTableWidgetItem(address))
+            self.tableWidget.setItem(row  ,firstColumn + 2, QTableWidgetItem(repeatType))
+            self.tableWidget.setItem(row  ,firstColumn + 3, QTableWidgetItem(repeatCycle))
+            self.tableWidget.setItem(row  ,firstColumn + 4, QTableWidgetItem(env))
+        elif type(name) == list:
+            itemList = name
+            for col,e in enumerate(itemList):
+                if type(e) != str:
+                    e = str(e)
+                else:
+                    pass
+                self.updateCell(row,col,e)
+        else:
+            pass
         pass
+
+    def save_table_content(self):
+
+        f = open("fileList.fl", 'w')
         
+        f.write(str(self.tableWidget.rowCount()))
+        f.write("\n")
+        for currentRow in range(self.tableWidget.rowCount()):
+            for c in range(5):
+                item = self.tableWidget.item(currentRow,c).text()
+                f.write(item)
+                f.write(" ")
+            f.write("\n")
+                
+        f.close()
+        print("완료")
+        pass 
+    def load_file_content(self):
+        try:
+            f = open("fileList.fl","r")
+            self.clearAllRow()
+            savedFileNum = int(f.readline())
+            for row in range(savedFileNum):
+                tableWidgetItems = f.readline().split(" ")
+                print(tableWidgetItems)
+                self.addRow()
+                self.updateRow(row,tableWidgetItems)
+        except FileNotFoundError:
+            print("There is no saved file.")
     def addRow(self):
         # 마지막줄에 추가하기 위함
         rowPosition =self.tableWidget.rowCount()
@@ -119,16 +160,24 @@ class WindowClass(QMainWindow, form_class):
         
     def deleteRow (self, pos):
         print("call DeleteRow")
-        self.tableWidget.removeRow(self.tableWidget.indexAt(pos).row())
+        #self.tableWidget.removeRow(self.tableWidget.indexAt(pos).row())
     
+    def clearAllRow(self):
+        while (self.tableWidget.rowCount() > 0):
+            self.tableWidget.removeRow(0)
+        
     def fileExecute(self, pos):
         targetRow = self.tableWidget.indexAt(pos).row()
         targetAddress = self.tableWidget.item(targetRow,1).text().split("/")
         targetFolder = "/".join(targetAddress[0:-1])
         targetfileName = targetAddress[-1]
+        targetEnv = self.tableWidget.item(targetRow,4).text()
         print("targetAddress",targetAddress)
+
         os.chdir(targetFolder)
+        os.system("conda activate "+ targetEnv)
         os.system("python " + targetfileName)
+            
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)

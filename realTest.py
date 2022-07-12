@@ -1,8 +1,18 @@
+a = [1,2,3,4,5,6]
 
 
-l = "1,2,3,4,5,6,7,8,9,10"
+def sum(*nums):
+    result = 0
 
-lList = l.split(",")
+    for i in (nums):
+        if type(i) is list or tuple:
+            for j in i :
+                result += j
+        if type(i) is int:
+            result += i
 
-realL = ",".join(lList[0:-1])
-print(realL)
+    return result
+
+
+print(sum([1,2,3,4,5,6,7,8,9]))
+print(sum(a))
