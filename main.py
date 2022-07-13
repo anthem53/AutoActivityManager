@@ -7,11 +7,8 @@ import math
 
 import PyQt5
 from PyQt5 import (uic , QtCore)
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow,
-                             QTextEdit, QMessageBox,QListView,QTreeView,QFileSystemModel,
-                             QAbstractItemView,QTableWidget,QTableWidgetItem,
-                             QMenu, QInputDialog)
+from PyQt5.QtGui import * 
+from PyQt5.QtWidgets import * 
 
 
 form_class = uic.loadUiType("pyqt.ui")[0]
@@ -31,9 +28,30 @@ class WindowClass(QMainWindow, form_class):
         self.setWindowTitle("Python GUI Shell")
         self.setWindowIcon(QIcon('logo-python.png'))
  
+        self.thisFileAddress = os.path.realpath(__file__)
+        tempList = self.thisFileAddress.split("\\")
+        self.saveDirectory = "/".join(tempList[0:-1])
+
         self.initUI()
-        self.tableItemList = []
-        
+        self.initTraySystem()
+    
+    def initTraySystem(self):
+        trayIcon = QIcon("logo-python.png")
+        self.trayElement = QSystemTrayIcon(self)
+        self.trayElement.setIcon(trayIcon)
+        show_action = QAction("Show", self)
+        quit_action = QAction("Exit", self)
+        hide_action = QAction("Hide", self)
+        show_action.triggered.connect(self.show)
+        hide_action.triggered.connect(self.hide)
+        quit_action.triggered.connect(qApp.quit)
+        tray_menu = QMenu()
+        tray_menu.addAction(show_action)
+        tray_menu.addAction(hide_action)
+        tray_menu.addAction(quit_action)
+        self.trayElement.setContextMenu(tray_menu)
+        self.trayElement.show()
+ 
     def initUI(self):
 
         self.tableWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
@@ -113,30 +131,34 @@ class WindowClass(QMainWindow, form_class):
 
     def save_table_content(self):
 
-        if os.path.exists("fileList.fl") == True:
-            os.remove("fileList.fl")
+        savedfile  = self.saveDirectory + "/fileList.fl"
+        print(savedfile)
+        if os.path.exists(savedfile) == True:
+            os.remove(savedfile)
         else:
             pass
 
-        f = open("fileList.fl", 'w')
+        f = open(savedfile, 'w')
         
         f.write(str(self.tableWidget.rowCount()))
         f.write("\n")
         for currentRow in range(self.tableWidget.rowCount()):
-            print("row num:", self.tableWidget.rowCount())
+            #print("row num:", self.tableWidget.rowCount())
             for c in range(5):
                 item = self.tableWidget.item(currentRow,c).text()
-                print("item: ",item)
+                #print("item: ",item)
                 f.write(item)
                 f.write(" ")
             f.write("\n")
                 
         f.close()
-        print("완료")
+        #print("완료")
+        self.logText.setText("저장 완료")
         pass 
     def load_file_content(self):
         try:
-            f = open("fileList.fl","r")
+            savedfile = self.saveDirectory +  "fileList.fl"
+            f = open(savedfile,"r")
             self.clearAllRow()
             savedFileNum = int(f.readline())
             for row in range(savedFileNum):
@@ -212,7 +234,22 @@ class WindowClass(QMainWindow, form_class):
             os.system(targetfileName)
         else:
             os.system(targetfileName)
-        
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Message', 'Are you sure to quit?\nif not the program is on the tray.',
+                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+            self.hide()
+            self.trayElement.showMessage(
+                "Tray Program",
+                "Application was minimized to Tray",
+                QSystemTrayIcon.Information,
+                2000
+            )
+ 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myWindow = WindowClass()
