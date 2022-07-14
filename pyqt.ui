@@ -138,7 +138,7 @@
      <x>0</x>
      <y>0</y>
      <width>872</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -156,8 +156,15 @@
     <addaction name="actionexecute_N_day_list"/>
     <addaction name="actionexecute_week_day_list"/>
    </widget>
+   <widget class="QMenu" name="menuetc">
+    <property name="title">
+     <string>etc</string>
+    </property>
+    <addaction name="actionShow_current_time"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuexecute"/>
+   <addaction name="menuetc"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionadd_file">
@@ -186,6 +193,11 @@
   <action name="actionload">
    <property name="text">
     <string>load</string>
+   </property>
+  </action>
+  <action name="actionShow_current_time">
+   <property name="text">
+    <string>Show current time</string>
    </property>
   </action>
  </widget>

@@ -1,15 +1,13 @@
-from operator import truediv
 import os
-import re
-import shutil
 import sys
-import math
+import webbrowser
+import math, re, shutil
 
 import PyQt5
 from PyQt5 import (uic , QtCore)
 from PyQt5.QtGui import * 
 from PyQt5.QtWidgets import * 
-
+from PyQt5.QtCore import *
 
 form_class = uic.loadUiType("pyqt.ui")[0]
 
@@ -66,6 +64,7 @@ class WindowClass(QMainWindow, form_class):
 
         self.actionsave.triggered.connect(self.save_table_content)
         self.actionload.triggered.connect(self.load_file_content)
+        self.actionShow_current_time.triggered.connect(self.test)
      
         self.registerButton.clicked.connect(self.registerNewfile)
 
@@ -74,7 +73,7 @@ class WindowClass(QMainWindow, form_class):
             self.clearAllRow()
             savedFileNum = int(f.readline())
             for row in range(savedFileNum):
-                tableWidgetItems = f.readline().split(" ")
+                tableWidgetItems = f.readline().split("   ")
                 print(tableWidgetItems)
                 self.addRow()
                 self.updateRow(row,tableWidgetItems)
@@ -82,8 +81,9 @@ class WindowClass(QMainWindow, form_class):
             print("There is no saved file.")
 
 
-    def test(self, pos):
+    def test(self):
         print("KILL me")
+        self.logText.setText(QDateTime.currentDateTime().toString("ddd.h.m.s"))
 
     def registerNewfile(self):
         
@@ -104,6 +104,7 @@ class WindowClass(QMainWindow, form_class):
             print("registerNewfile complete")
         else:
             print("Not select file")
+
     def updateCell(self,row,col, content):
         self.tableWidget.setItem(row,col,QTableWidgetItem(content))
     def updateRow (self,row,name, address=None, repeatType=None,repeatCycle=None, env=None):
@@ -143,16 +144,14 @@ class WindowClass(QMainWindow, form_class):
         f.write(str(self.tableWidget.rowCount()))
         f.write("\n")
         for currentRow in range(self.tableWidget.rowCount()):
-            #print("row num:", self.tableWidget.rowCount())
             for c in range(5):
                 item = self.tableWidget.item(currentRow,c).text()
                 #print("item: ",item)
                 f.write(item)
-                f.write(" ")
+                f.write("   ")
             f.write("\n")
                 
         f.close()
-        #print("완료")
         self.logText.setText("저장 완료")
         pass 
     def load_file_content(self):
@@ -162,7 +161,7 @@ class WindowClass(QMainWindow, form_class):
             self.clearAllRow()
             savedFileNum = int(f.readline())
             for row in range(savedFileNum):
-                tableWidgetItems = f.readline().split(" ")
+                tableWidgetItems = f.readline().split("   ")
                 print(tableWidgetItems)
                 self.addRow()
                 self.updateRow(row,tableWidgetItems)
@@ -182,7 +181,7 @@ class WindowClass(QMainWindow, form_class):
         # 빈공간에서
         if(self.tableWidget.itemAt(pos) is None):
             self.emptymMenu = QMenu(self)
-            self.emptymMenu.addAction("추가", self.addRow)      
+            #self.emptymMenu.addAction("추가", self.addRow)      
             self.emptymMenu.exec_(self.tableWidget.mapToGlobal(pos)) 
             
         # 아이템에서
@@ -190,17 +189,30 @@ class WindowClass(QMainWindow, form_class):
             self.menu = QMenu(self)
             self.menu.addAction("실행", lambda: self.fileExecuteWithPos(pos))
             self.menu.addAction("이름 변경", lambda : self.modifyName(pos))
+            self.menu.addAction("가상환경 변경", lambda : self.modifyEnv(pos))
+            self.menu.addAction("해당 폴더 열기",lambda : self.openTargetFileFolder(pos))
             self.menu.addAction("삭제",lambda: self.deleteRow(pos))      
             self.menu.exec_(self.tableWidget.mapToGlobal(pos)) 
 
+    def openTargetFileFolder (self,pos):
+        targetRow = self.tableWidget.indexAt(pos).row()
+        targetAddress = self.tableWidget.item(targetRow,1).text()
+        targetAddressList = targetAddress.split("/")
+        targetFolder = "/".join(targetAddressList[0:-1])
+        webbrowser.open("\"%s\"" % targetFolder)
     def modifyName(self, pos):
-        print("pos : ", pos)
-        print("x, y : ", pos.x(), pos.y())
+       
         targetRow = self.tableWidget.indexAt(pos).row()
         name, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter your name:')    
         if ok == True :
             name_v2 = name.replace(" ", "_")
             self.tableWidget.setItem(targetRow ,0, QTableWidgetItem(name_v2))            
+    def modifyEnv(self, pos):
+        targetRow = self.tableWidget.indexAt(pos).row()
+        name, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter new Env Name:')    
+        if ok == True :
+            name_v2 = name.replace(" ", "_")
+            self.tableWidget.setItem(targetRow ,4, QTableWidgetItem(name_v2))            
  
     def deleteRow (self, pos):
         print("call DeleteRow")
@@ -216,11 +228,12 @@ class WindowClass(QMainWindow, form_class):
 
     def fileExecute(self, targetRow):
         # Parsing part
-        targetAddress = self.tableWidget.item(targetRow,1).text().split("/")
-        targetFolder = "/".join(targetAddress[0:-1])
-        targetfileName = targetAddress[-1]
+        targetAddress = self.tableWidget.item(targetRow,1).text()
+        targetAddressList = targetAddress.split("/")
+        targetFolder = "/".join(targetAddressList[0:-1])
+        targetfileName = targetAddressList[-1]
         targetEnv = self.tableWidget.item(targetRow,4).text()
-        print("targetAddress",targetAddress)
+        print("targetAddressList",targetAddressList)
 
         # move target folder
         os.chdir(targetFolder)
@@ -228,8 +241,16 @@ class WindowClass(QMainWindow, form_class):
         extention = targetfileName.split(".")[-1]
 
         if (extention == "py")     :
-            os.system("conda activate "+ targetEnv)
-            os.system("python " + targetfileName)
+            pythonBatch = open(targetFolder+"/tempBatch.bat","w")
+            pythonBatch.write("cd %s \n" % targetFolder )
+            pythonBatch.write("call conda activate "+targetEnv +"\n")
+            pythonBatch.write("python " + targetAddress+"\n")
+            pythonBatch.write("call conda deactivate\n")
+            pythonBatch.close()
+            #os.system("conda activate "+ targetEnv)
+            #os.system("python " + targetfileName)
+            os.system("tempBatch.bat")
+            #os.remove(targetFolder+"/tempBatch.bat")
         elif extention == "bat" :
             os.system(targetfileName)
         else:
