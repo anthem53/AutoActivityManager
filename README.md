@@ -7,9 +7,9 @@ This is python shell program that manage to execute python code automatically.
 # TO DO LIST
 
 + To implement the timer system
- + To set the time that the main program run target programs. 
-  + this part is user experience part. so Need to test many times.
- + To calculate the left time to goal time.
+ - To set the time that the main program run target programs. 
+  * this part is user experience part. so Need to test many times.
+ - To calculate the left time to goal time.
 + To execute python code in this shell program at every day. 
 + To execute python code at every N days
 + To add new window for register every day or every N days.
