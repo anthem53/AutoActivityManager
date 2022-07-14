@@ -11,10 +11,6 @@ from PyQt5.QtCore import *
 
 form_class = uic.loadUiType("pyqt.ui")[0]
 
-
-
-
-
 class WindowClass(QMainWindow, form_class):
 
 
@@ -32,6 +28,10 @@ class WindowClass(QMainWindow, form_class):
 
         self.initUI()
         self.initTraySystem()
+        self.initTimer()
+
+    def initTimer(self):
+        self.timer = QTimer()
     
     def initTraySystem(self):
         trayIcon = QIcon("logo-python.png")
@@ -97,7 +97,11 @@ class WindowClass(QMainWindow, form_class):
             fname = fNames[-2] + "/" + fNames[-1] 
             print("self.tableWidget.rowCount(): ", self.tableWidget.rowCount())
             firstColumn = 0
-            self.updateRow(count,fname,fAddress[0],0,0,"Leejihyeon")
+
+            envName, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter new Env Name:')    
+            if ok != True :
+                envName = "Leejihyeon" 
+            self.updateRow(count,fname,fAddress[0],0,0,envName)
             
             #self.tableWidget.resizeColumnsToContents()
             
@@ -213,7 +217,7 @@ class WindowClass(QMainWindow, form_class):
         if ok == True :
             name_v2 = name.replace(" ", "_")
             self.tableWidget.setItem(targetRow ,4, QTableWidgetItem(name_v2))            
- 
+    
     def deleteRow (self, pos):
         print("call DeleteRow")
         self.tableWidget.removeRow(self.tableWidget.indexAt(pos).row())
@@ -234,7 +238,7 @@ class WindowClass(QMainWindow, form_class):
         targetfileName = targetAddressList[-1]
         targetEnv = self.tableWidget.item(targetRow,4).text()
         print("targetAddressList",targetAddressList)
-
+        print("targetAddress",targetAddress)
         # move target folder
         os.chdir(targetFolder)
         
@@ -247,14 +251,34 @@ class WindowClass(QMainWindow, form_class):
             pythonBatch.write("python " + targetAddress+"\n")
             pythonBatch.write("call conda deactivate\n")
             pythonBatch.close()
-            #os.system("conda activate "+ targetEnv)
-            #os.system("python " + targetfileName)
-            os.system("tempBatch.bat")
-            #os.remove(targetFolder+"/tempBatch.bat")
+            os.system(targetFolder+"/tempBatch.bat")
+            os.remove(targetFolder+"/tempBatch.bat")
         elif extention == "bat" :
             os.system(targetfileName)
+        elif extention == "exe":
+            pythonBatch = open(targetFolder+"/tempBatch.bat","w")
+            pythonBatch.write("cd %s \n" % targetFolder )
+            pythonBatch.write("call conda activate "+targetEnv +"\n")
+            pythonBatch.write("start "+"\""+targetAddress+"\"\n")
+            pythonBatch.write("call conda deactivate\n")
+            pythonBatch.close()
+            os.system(targetFolder+"/tempBatch.bat")
         else:
             os.system(targetfileName)
+    def writeBatch(self,f_opend,address):
+        convertedAddress = self.convert2BatchAddress(address)
+        f_opend.write(convertedAddress)
+    def convert2BatchAddress (self,address):
+        addressItemList = address.split("/")
+        resultList = []
+
+        for e in addressItemList:
+            if ' ' in e :
+                resultList.append("\""+e+"\"")
+            else:
+                resultList.append(e)
+        result = '/'.join(resultList)
+        return result
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message', 'Are you sure to quit?\nif not the program is on the tray.',
                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -270,7 +294,14 @@ class WindowClass(QMainWindow, form_class):
                 QSystemTrayIcon.Information,
                 2000
             )
- 
+
+class timer :
+    def __init__(self):
+        self.test = None
+
+
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myWindow = WindowClass()
