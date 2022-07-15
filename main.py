@@ -243,26 +243,28 @@ class WindowClass(QMainWindow, form_class):
         os.chdir(targetFolder)
         
         extention = targetfileName.split(".")[-1]
+        targetFolderForBatch = self.convert2BatchAddress(targetFolder)
+        targetAddressForBatch = self.convert2BatchAddress(targetAddress)
 
         if (extention == "py")     :
-            pythonBatch = open(targetFolder+"/tempBatch.bat","w")
-            pythonBatch.write("cd %s \n" % targetFolder )
-            pythonBatch.write("call conda activate "+targetEnv +"\n")
-            pythonBatch.write("python " + targetAddress+"\n")
-            pythonBatch.write("call conda deactivate\n")
-            pythonBatch.close()
-            os.system(targetFolder+"/tempBatch.bat")
-            os.remove(targetFolder+"/tempBatch.bat")
+
+            with open(targetFolder+"/tempBatch.bat","w") as pythonBatch:
+                pythonBatch.write("cd %s \n" % targetFolderForBatch )
+                pythonBatch.write("call conda activate "+targetEnv +"\n")
+                pythonBatch.write("python " + targetAddressForBatch+"\n")
+                pythonBatch.write("call conda deactivate\n")
+
+            os.system(targetFolderForBatch+"/tempBatch.bat")
+            os.remove(targetFolderForBatch+"/tempBatch.bat")
         elif extention == "bat" :
-            os.system(targetfileName)
+            #os.system(targetfileName)
+            os.system(targetAddressForBatch)
         elif extention == "exe":
-            pythonBatch = open(targetFolder+"/tempBatch.bat","w")
-            pythonBatch.write("cd %s \n" % targetFolder )
-            pythonBatch.write("call conda activate "+targetEnv +"\n")
-            pythonBatch.write("start "+"\""+targetAddress+"\"\n")
-            pythonBatch.write("call conda deactivate\n")
-            pythonBatch.close()
-            os.system(targetFolder+"/tempBatch.bat")
+            with open(targetFolder+"/tempBatch.bat","w") as exeBatch :
+                exeBatch.write("start "+""+targetAddressForBatch+"\n")
+
+            os.system(targetFolderForBatch+"/tempBatch.bat")
+            #os.remove(targetFolder+"/tempBatch.bat")
         else:
             os.system(targetfileName)
     def writeBatch(self,f_opend,address):
@@ -277,9 +279,21 @@ class WindowClass(QMainWindow, form_class):
                 resultList.append("\""+e+"\"")
             else:
                 resultList.append(e)
-        result = '/'.join(resultList)
+        result = '\\'.join(resultList)
         return result
+    def writeBatchFile(self,batchfile,address):
+        batchfile.write(self.convert2BatchAddress(address))
+
     def closeEvent(self, event):
+
+        saved = QMessageBox.question(self, 'Message', 'Do you want to save the file?',
+                            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if saved == QMessageBox.Yes:
+            self.save_table_content()
+        else:
+            pass
+
         reply = QMessageBox.question(self, 'Message', 'Are you sure to quit?\nif not the program is on the tray.',
                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
