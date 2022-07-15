@@ -62,6 +62,7 @@ class WindowClass(QMainWindow, form_class):
         self.tableWidget.customContextMenuRequested.connect(self.generateMenu)
         self.tableWidget.doubleClicked.connect(self.tableWidget_doubleClicked)
 
+        self.actionadd_file.triggered.connect(self.registerNewfile)
         self.actionsave.triggered.connect(self.save_table_content)
         self.actionload.triggered.connect(self.load_file_content)
         self.actionShow_current_time.triggered.connect(self.test)
@@ -74,7 +75,7 @@ class WindowClass(QMainWindow, form_class):
             savedFileNum = int(f.readline())
             for row in range(savedFileNum):
                 tableWidgetItems = f.readline().split("   ")
-                print(tableWidgetItems)
+                #print(tableWidgetItems)
                 self.addRow()
                 self.updateRow(row,tableWidgetItems)
         except FileNotFoundError:
@@ -112,7 +113,7 @@ class WindowClass(QMainWindow, form_class):
     def updateCell(self,row,col, content):
         self.tableWidget.setItem(row,col,QTableWidgetItem(content))
     def updateRow (self,row,name, address=None, repeatType=None,repeatCycle=None, env=None):
-        print(name)
+        #print(name)
         if type(name)== str:
             firstColumn = 0
             repeatType = str(repeatType)
@@ -166,7 +167,7 @@ class WindowClass(QMainWindow, form_class):
             savedFileNum = int(f.readline())
             for row in range(savedFileNum):
                 tableWidgetItems = f.readline().split("   ")
-                print(tableWidgetItems)
+                #print(tableWidgetItems)
                 self.addRow()
                 self.updateRow(row,tableWidgetItems)
         except FileNotFoundError:
@@ -237,8 +238,8 @@ class WindowClass(QMainWindow, form_class):
         targetFolder = "/".join(targetAddressList[0:-1])
         targetfileName = targetAddressList[-1]
         targetEnv = self.tableWidget.item(targetRow,4).text()
-        print("targetAddressList",targetAddressList)
-        print("targetAddress",targetAddress)
+        #print("targetAddressList",targetAddressList)
+        #print("targetAddress",targetAddress)
         # move target folder
         os.chdir(targetFolder)
         
@@ -266,7 +267,7 @@ class WindowClass(QMainWindow, form_class):
             os.system(targetFolderForBatch+"/tempBatch.bat")
             #os.remove(targetFolder+"/tempBatch.bat")
         else:
-            os.system(targetfileName)
+            os.system(targetAddressForBatch)
     def writeBatch(self,f_opend,address):
         convertedAddress = self.convert2BatchAddress(address)
         f_opend.write(convertedAddress)
@@ -286,7 +287,7 @@ class WindowClass(QMainWindow, form_class):
 
     def closeEvent(self, event):
 
-        saved = QMessageBox.question(self, 'Message', 'Do you want to save the file?',
+        saved = QMessageBox.question(self, 'Message', 'Do you want to SAVE?',
                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if saved == QMessageBox.Yes:
@@ -294,7 +295,7 @@ class WindowClass(QMainWindow, form_class):
         else:
             pass
 
-        reply = QMessageBox.question(self, 'Message', 'Are you sure to quit?\nif not the program is on the tray.',
+        reply = QMessageBox.question(self, 'Message', 'Are you sure to QUIT?\nIf not, the program is on the TRAY.',
                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
