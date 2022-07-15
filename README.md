@@ -14,7 +14,7 @@ This is python shell program that manage to execute python code automatically.
 + To execute python code at every N days
 + To add new window for register every day or every N days.
 + To find good model for day system
-+ To make it possible to execute EXE file 
+
 
 
 # Done List from TO DO LIST
@@ -25,5 +25,6 @@ This is python shell program that manage to execute python code automatically.
 + setting env part in table
 + To modify Name in table
 + To add the open folder function in right click.
++ To make it possible to execute EXE file 
 
 
