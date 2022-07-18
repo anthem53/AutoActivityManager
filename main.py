@@ -32,7 +32,11 @@ class WindowClass(QMainWindow, form_class):
 
     def initTimer(self):
         self.timer = QTimer()
-    
+        self.timer.setInterval(1000)
+        self.timer.timeout.connect(self.timerFunction)
+        self.timer.start()
+        self.timerREST = 5
+
     def initTraySystem(self):
         trayIcon = QIcon("logo-python.png")
         self.trayElement = QSystemTrayIcon(self)
@@ -85,6 +89,15 @@ class WindowClass(QMainWindow, form_class):
     def test(self):
         print("KILL me")
         self.logText.setText(QDateTime.currentDateTime().toString("ddd.h.m.s"))
+    def timerFunction(self):
+        if self.timerREST > 0:
+            self.timerREST -= 1
+            self.logText.setText("%d second rest" % self.timerREST)
+        else:
+            self.logText.setText("Timer end")
+            self.timer.stop()
+            #self.fileExecute(4)
+            #self.fileExecute(0)
 
     def registerNewfile(self):
         
@@ -238,8 +251,7 @@ class WindowClass(QMainWindow, form_class):
         targetFolder = "/".join(targetAddressList[0:-1])
         targetfileName = targetAddressList[-1]
         targetEnv = self.tableWidget.item(targetRow,4).text()
-        #print("targetAddressList",targetAddressList)
-        #print("targetAddress",targetAddress)
+        
         # move target folder
         os.chdir(targetFolder)
         
@@ -265,12 +277,12 @@ class WindowClass(QMainWindow, form_class):
                 exeBatch.write("start "+""+targetAddressForBatch+"\n")
 
             os.system(targetFolderForBatch+"/tempBatch.bat")
-            #os.remove(targetFolder+"/tempBatch.bat")
+            #os.remove(targetFolderForBatch+"\\tempBatch.bat")
+            print("targetFolderForBatch", targetFolderForBatch)
+            print()
         else:
             os.system(targetAddressForBatch)
-    def writeBatch(self,f_opend,address):
-        convertedAddress = self.convert2BatchAddress(address)
-        f_opend.write(convertedAddress)
+
     def convert2BatchAddress (self,address):
         addressItemList = address.split("/")
         resultList = []
@@ -280,10 +292,8 @@ class WindowClass(QMainWindow, form_class):
                 resultList.append("\""+e+"\"")
             else:
                 resultList.append(e)
-        result = '\\'.join(resultList)
+        result = '/'.join(resultList)
         return result
-    def writeBatchFile(self,batchfile,address):
-        batchfile.write(self.convert2BatchAddress(address))
 
     def closeEvent(self, event):
 
@@ -310,9 +320,6 @@ class WindowClass(QMainWindow, form_class):
                 2000
             )
 
-class timer :
-    def __init__(self):
-        self.test = None
 
 
 
