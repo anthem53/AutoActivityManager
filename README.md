@@ -5,7 +5,7 @@ This is python shell program that manage to execute python code automatically.
 
 
 # TO DO LIST
-
++ add the function that  move the item already registered to other 
 
 
 # Done List from TO DO LIST
