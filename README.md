@@ -2,10 +2,15 @@
 
 This is python shell program that manage to execute python code automatically.
 
+#Requirement
+
+
+
 
 
 # TO DO LIST
-+ add the function that  move the item already registered to other 
++ To add the function that  move the item already registered to other 
++ To improve gui design
 
 
 # Done List from TO DO LIST
