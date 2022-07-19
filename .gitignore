@@ -3,5 +3,5 @@
 realTest.py
 test.py
 traymodeSample.py
-*.fl
+#fileList.fl
 *.txt
