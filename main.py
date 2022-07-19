@@ -10,6 +10,73 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 form_class = uic.loadUiType("pyqt.ui")[0]
+n_dyas_repeat_class = uic.loadUiType('n-days_repeat.ui')[0]
+day_repeat_class = uic.loadUiType('dayRepeat.ui')[0]
+
+class dayRepeatDialog(QDialog,day_repeat_class):
+    def __init__(self,target=[]):
+        super().__init__()
+
+        self.setupUi(self)
+        self.initUi()
+
+        if target == []:
+            print("default setting")
+        else :
+            print("existed setting")
+    def initUi(self):
+        self.okButton.clicked.connect(self.onOKButtonClicked)
+        self.cancelButton.clicked.connect(self.onCancelButtonClicked)
+    def onOKButtonClicked(self):
+        self.accept()
+    def onCancelButtonClicked(self):
+        self.reject()
+    def showModal(self):
+        
+        isOkclicked = super().exec_()
+        selectedDayList = ""
+
+        if self.checkBox_mon.isChecked() == True:
+            selectedDayList += "월" 
+        if self.checkBox_tues.isChecked() == True:
+            selectedDayList += "화"
+        if self.checkBox_wed.isChecked() == True:
+            selectedDayList += "수"
+        if self.checkBox_thur.isChecked() == True:
+            selectedDayList += "목"
+        if self.checkBox_fri.isChecked() == True:
+            selectedDayList += "금"
+        if self.checkBox_sat.isChecked() == True:
+            selectedDayList += "토"
+        if self.checkBox_sun.isChecked() == True:
+            selectedDayList += "일"
+
+        return isOkclicked, selectedDayList
+
+
+class repeatDialog(QDialog,n_dyas_repeat_class):
+    def __init__(self):
+        super().__init__()
+        
+        self.setupUi(self)
+
+        self.numberBox.setMaximum(7)
+        self.numberBox.setMinimum(1)
+        pass
+    def showModal(self):
+
+        isOkclicked = super().exec_()
+        dayNum = self.numberBox.text()
+        dayNum = int(dayNum)
+        if dayNum <= 0 :
+            dayNum = 0 
+        elif dayNum >7 :
+            dayNum = 7
+        else:
+            pass
+        return isOkclicked,dayNum
+
+
 
 class WindowClass(QMainWindow, form_class):
 
@@ -28,7 +95,7 @@ class WindowClass(QMainWindow, form_class):
 
         self.initUI()
         self.initTraySystem()
-        self.initTimer()
+        #self.initTimer()
 
     def initTimer(self):
         self.timer = QTimer()
@@ -70,8 +137,10 @@ class WindowClass(QMainWindow, form_class):
         self.actionsave.triggered.connect(self.save_table_content)
         self.actionload.triggered.connect(self.load_file_content)
         self.actionShow_current_time.triggered.connect(self.test)
-     
+        self.actionRepeat_Execute.triggered.connect(self.test)
+
         self.registerButton.clicked.connect(self.registerNewfile)
+        
 
         try:
             f = open("fileList.fl","r")
@@ -198,15 +267,14 @@ class WindowClass(QMainWindow, form_class):
     def generateMenu(self, pos):
         # 빈공간에서
         if(self.tableWidget.itemAt(pos) is None):
-            self.emptymMenu = QMenu(self)
-            #self.emptymMenu.addAction("추가", self.addRow)      
-            self.emptymMenu.exec_(self.tableWidget.mapToGlobal(pos)) 
-            
+            pass
         # 아이템에서
         else:
             self.menu = QMenu(self)
             self.menu.addAction("실행", lambda: self.fileExecuteWithPos(pos))
             self.menu.addAction("이름 변경", lambda : self.modifyName(pos))
+            self.menu.addAction("N일 마다 반복 설정", lambda : self.setNdaysRepeat(pos))
+            self.menu.addAction("요일 마다 반복 설정",lambda : self.setDayrepeat(pos))
             self.menu.addAction("가상환경 변경", lambda : self.modifyEnv(pos))
             self.menu.addAction("해당 폴더 열기",lambda : self.openTargetFileFolder(pos))
             self.menu.addAction("삭제",lambda: self.deleteRow(pos))      
@@ -218,6 +286,23 @@ class WindowClass(QMainWindow, form_class):
         targetAddressList = targetAddress.split("/")
         targetFolder = "/".join(targetAddressList[0:-1])
         webbrowser.open("\"%s\"" % targetFolder)
+    def setDayrepeat(self, pos):
+        targetRow = self.tableWidget.indexAt(pos).row()
+        win = dayRepeatDialog()
+        isOkClicked, dayString = win.showModal()
+        if isOkClicked == True:
+            self.tableWidget.setItem(targetRow ,2, QTableWidgetItem("요일마다"))            
+            self.tableWidget.setItem(targetRow ,3, QTableWidgetItem(dayString))                
+    def setNdaysRepeat(self, pos):
+        targetRow = self.tableWidget.indexAt(pos).row()
+        win = repeatDialog()
+        isOkClicked,dayNum = win.showModal()
+        if isOkClicked:
+            print("OK clicked")
+            
+            self.tableWidget.setItem(targetRow ,2, QTableWidgetItem("N일마다"))            
+            self.tableWidget.setItem(targetRow ,3, QTableWidgetItem(str(dayNum)))                
+
     def modifyName(self, pos):
        
         targetRow = self.tableWidget.indexAt(pos).row()

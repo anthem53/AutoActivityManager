@@ -15,18 +15,10 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="2" column="0" alignment="Qt::AlignHCenter">
-     <widget class="QLabel" name="label">
-      <property name="font">
-       <font>
-        <family>나눔스퀘어라운드OTF ExtraBold</family>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Log</string>
+    <item row="3" column="0">
+     <widget class="QLineEdit" name="logText">
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -45,7 +37,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="testButton">
         <property name="font">
          <font>
           <family>Arial</family>
@@ -81,6 +73,21 @@
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="2" column="0" alignment="Qt::AlignHCenter">
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <family>나눔스퀘어라운드OTF ExtraBold</family>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Log</string>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <widget class="QTableWidget" name="tableWidget">
@@ -123,13 +130,6 @@
       </column>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="QLineEdit" name="logText">
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -153,8 +153,7 @@
     <property name="title">
      <string>execute</string>
     </property>
-    <addaction name="actionexecute_N_day_list"/>
-    <addaction name="actionexecute_week_day_list"/>
+    <addaction name="actionRepeat_Execute"/>
    </widget>
    <widget class="QMenu" name="menuetc">
     <property name="title">
@@ -180,9 +179,9 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionexecute_N_day_list">
+  <action name="actionRepeat_Execute">
    <property name="text">
-    <string>execute N-day list</string>
+    <string>Repeat_Execute</string>
    </property>
   </action>
   <action name="actionexecute_week_day_list">
