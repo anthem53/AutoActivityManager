@@ -77,7 +77,6 @@ class repeatDialog(QDialog,n_dyas_repeat_class):
         return isOkclicked,dayNum
 
 
-
 class WindowClass(QMainWindow, form_class):
 
 
@@ -119,8 +118,14 @@ class WindowClass(QMainWindow, form_class):
         tray_menu.addAction(hide_action)
         tray_menu.addAction(quit_action)
         self.trayElement.setContextMenu(tray_menu)
+        self.trayElement.activated.connect(self.trayAction)
         self.trayElement.show()
  
+    def trayAction(self , index):
+        if index == 2:
+            print("tray_doubleclick")
+            self.show()
+
     def initUI(self):
 
         self.tableWidget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
