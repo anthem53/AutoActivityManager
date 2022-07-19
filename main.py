@@ -132,6 +132,7 @@ class WindowClass(QMainWindow, form_class):
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.customContextMenuRequested.connect(self.generateMenu)
         self.tableWidget.doubleClicked.connect(self.tableWidget_doubleClicked)
+        self.tableWidget.setColumnHidden(1,True)
 
         self.actionadd_file.triggered.connect(self.registerNewfile)
         self.actionsave.triggered.connect(self.save_table_content)

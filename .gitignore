@@ -1,7 +1,8 @@
 ## test and training file ##
 
+.vscode/
 realTest.py
 test.py
 traymodeSample.py
-#fileList.fl
+fileList.fl
 *.txt
