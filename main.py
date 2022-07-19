@@ -137,7 +137,7 @@ class WindowClass(QMainWindow, form_class):
         self.actionsave.triggered.connect(self.save_table_content)
         self.actionload.triggered.connect(self.load_file_content)
         self.actionShow_current_time.triggered.connect(self.test)
-        self.actionRepeat_Execute.triggered.connect(self.test)
+        self.actionRepeat_Execute.triggered.connect(self.executeRepeat)
 
         self.registerButton.clicked.connect(self.registerNewfile)
         
@@ -264,6 +264,66 @@ class WindowClass(QMainWindow, form_class):
         rowPosition =self.tableWidget.rowCount()
         self.tableWidget.insertRow(rowPosition)
     
+    def repeatHash(self,text):
+
+        if text == "반복없음":
+            return 0 , None
+        elif text == "요일마다":
+            return 2 , None 
+        elif text[1:] == "일마다":
+            return 1 , int(text[0])
+        else:
+            return 3, None
+
+    def dayOfWeekHash(self, dayNum):
+        if dayNum == 1 :
+            return "월"
+        elif dayNum == 2 :
+            return "화"
+        elif dayNum == 3:
+            return "수"
+        elif dayNum == 4:
+            return "목"
+        elif dayNum == 5:
+            return "금"
+        elif dayNum == 6:
+            return "토"
+        elif dayNum == 7:
+            return "일"
+        else :
+            return None
+    def executeRepeat(self):
+        for currentRow in range(self.tableWidget.rowCount()):
+            rawRepeatType = self.tableWidget.item(currentRow,2).text()
+            repeatType, cycle = self.repeatHash(rawRepeatType)
+            if (repeatType == 0):
+                print("주기적 실행 파일이 아닙니다.")
+                pass
+            elif repeatType == 1:
+                print("%d일 마다 실행되는 파일입니다." % cycle)
+                itemFlag = self.tableWidget.item(currentRow,3).text()
+                tempQDate = QDate.fromString(itemFlag, "yyyy MM dd")
+                d_day = tempQDate.daysTo(QDate.currentDate()) % 3
+                if d_day == 0 :
+                    self.fileExecute(currentRow)
+                pass
+            elif repeatType == 2:
+                print("특정 요일마다 실행되는 파일입니다.")
+                targetDayofWeek = self.tableWidget.item(currentRow,3).text()
+                tempDayofWeek = self.dayOfWeekHash(QDate.currentDate().dayOfWeek())
+                print(tempDayofWeek)
+                if tempDayofWeek  in targetDayofWeek:
+                    self.fileExecute(currentRow)
+
+
+                pass
+            else :
+                print("에러 오지게 났음.")
+               
+        pass
+        #while (self.tableWidget.rowCount() > 0):
+        #    self.tableWidget.removeRow(0)
+
     def generateMenu(self, pos):
         # 빈공간에서
         if(self.tableWidget.itemAt(pos) is None):
