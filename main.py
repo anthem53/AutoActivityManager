@@ -273,9 +273,11 @@ class WindowClass(QMainWindow, form_class):
             self.menu = QMenu(self)
             self.menu.addAction("실행", lambda: self.fileExecuteWithPos(pos))
             self.menu.addAction("이름 변경", lambda : self.modifyName(pos))
+            self.menu.addSeparator()
             self.menu.addAction("N일 마다 반복 설정", lambda : self.setNdaysRepeat(pos))
             self.menu.addAction("요일 마다 반복 설정",lambda : self.setDayrepeat(pos))
             self.menu.addAction("반복 제거", lambda : self.clearRepeat(pos))
+            self.menu.addSeparator()
             self.menu.addAction("가상환경 변경", lambda : self.modifyEnv(pos))
             self.menu.addAction("해당 폴더 열기",lambda : self.openTargetFileFolder(pos))
             self.menu.addAction("삭제",lambda: self.deleteRow(pos))      
@@ -305,9 +307,10 @@ class WindowClass(QMainWindow, form_class):
         isOkClicked,dayNum = win.showModal()
         if isOkClicked:
             print("OK clicked")
-            
-            self.tableWidget.setItem(targetRow ,2, QTableWidgetItem("N일마다"))            
-            self.tableWidget.setItem(targetRow ,3, QTableWidgetItem(str(dayNum)))                
+            #referenceDate = QDate.currentDate().toString("ddd yyyy MM dd")
+            referenceDate = QDate.currentDate().toString("yyyy MM dd")
+            self.tableWidget.setItem(targetRow ,2, QTableWidgetItem("%s일마다" % str(dayNum)))            
+            self.tableWidget.setItem(targetRow ,3, QTableWidgetItem(referenceDate))                
 
     def modifyName(self, pos):
        
