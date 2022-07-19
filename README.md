@@ -6,15 +6,8 @@ This is python shell program that manage to execute python code automatically.
 
 # TO DO LIST
 
-+ To implement the timer system
-   - To set the time that the main program run target programs. 
-      * this part is user experience part. so Need to test many times.
-   - To calculate the left time to goal time.
 + To execute python code in this shell program at every day. 
 + To execute python code at every N days
-+ To add new window for register every day or every N days.
-+ To find good model for day system
-
 
 
 # Done List from TO DO LIST
@@ -26,5 +19,13 @@ This is python shell program that manage to execute python code automatically.
 + To modify Name in table
 + To add the open folder function in right click.
 + To make it possible to execute EXE file 
++ To add new window for register every day or every N days.
++ To find good model for day system
 
 
+# Cenceled plan in TO DO List
+
++ To implement the timer system
+   - To set the time that the main program run target programs. 
+      * this part is user experience part. so Need to test many times.
+   - To calculate the left time to goal time.
