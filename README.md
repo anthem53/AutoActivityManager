@@ -6,8 +6,6 @@ This is python shell program that manage to execute python code automatically.
 
 # TO DO LIST
 
-+ To execute python code in this shell program at every day. 
-+ To execute python code at every N days
 
 
 # Done List from TO DO LIST
@@ -21,6 +19,8 @@ This is python shell program that manage to execute python code automatically.
 + To make it possible to execute EXE file 
 + To add new window for register every day or every N days.
 + To find good model for day system
++ To execute python code in this shell program at every day. 
++ To execute python code at every N days
 
 
 # Cenceled plan in TO DO List
