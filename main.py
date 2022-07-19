@@ -184,7 +184,7 @@ class WindowClass(QMainWindow, form_class):
             envName, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter new Env Name:')    
             if ok != True :
                 envName = "Leejihyeon" 
-            self.updateRow(count,fname,fAddress[0],0,0,envName)
+            self.updateRow(count,fname,fAddress[0],"반복없음",0,envName)
             
             #self.tableWidget.resizeColumnsToContents()
             
@@ -275,6 +275,7 @@ class WindowClass(QMainWindow, form_class):
             self.menu.addAction("이름 변경", lambda : self.modifyName(pos))
             self.menu.addAction("N일 마다 반복 설정", lambda : self.setNdaysRepeat(pos))
             self.menu.addAction("요일 마다 반복 설정",lambda : self.setDayrepeat(pos))
+            self.menu.addAction("반복 제거", lambda : self.clearRepeat(pos))
             self.menu.addAction("가상환경 변경", lambda : self.modifyEnv(pos))
             self.menu.addAction("해당 폴더 열기",lambda : self.openTargetFileFolder(pos))
             self.menu.addAction("삭제",lambda: self.deleteRow(pos))      
@@ -286,6 +287,11 @@ class WindowClass(QMainWindow, form_class):
         targetAddressList = targetAddress.split("/")
         targetFolder = "/".join(targetAddressList[0:-1])
         webbrowser.open("\"%s\"" % targetFolder)
+    def clearRepeat(self, pos):
+        targetRow = self.tableWidget.indexAt(pos).row()
+        self.tableWidget.setItem(targetRow ,2, QTableWidgetItem("반복없음"))            
+        self.tableWidget.setItem(targetRow ,3, QTableWidgetItem("0"))                
+
     def setDayrepeat(self, pos):
         targetRow = self.tableWidget.indexAt(pos).row()
         win = dayRepeatDialog()
