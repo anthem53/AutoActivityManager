@@ -2,8 +2,10 @@
 
 This is python shell program that manage to execute python code automatically.
 
-#Requirement
+# Requirement
 
+python 3.10
+pyqt 5.15.7
 
 
 
